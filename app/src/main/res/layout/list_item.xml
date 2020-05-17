@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="15dp"
+    android:padding="5dp">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:id="@+id/LinearLayout"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#9C27B0"
+    android:layout_margin="15dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textColor="@color/white"
+        android:text="@string/ready_to_code"
+        android:textSize="24sp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:id="@+id/ListTextView_Name"
+       />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ListTextView_Age"
+        android:text="@string/age"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:layout_marginBottom="5dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/profession"
+        android:id="@+id/ListTextView_Profession"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/white"
+        android:layout_marginBottom="5dp"
+        android:textSize="20sp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/city"
+        android:textColor="@color/white"
+        android:id="@+id/ListTextView_city"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="20sp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"/>
+</LinearLayout>
+
+</androidx.cardview.widget.CardView>

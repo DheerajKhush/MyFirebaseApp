@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MyFirebaseApp</string>
+    <string name="ready_to_code">Ready to Code</string>
+    <string name="age">Age</string>
+    <string name="profession">Profession</string>
+    <string name="city">City</string>
+    <string name="enter_profession">Enter Profession</string>
+    <string name="enter_city">Enter City</string>
+    <string name="enter_age">Enter Age</string>
+</resources>
