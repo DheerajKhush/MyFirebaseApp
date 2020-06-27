@@ -6,6 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,13 +19,22 @@ import android.widget.Toast;
 
 import com.example.myfirebaseapp.model.User;
 import com.example.myfirebaseapp.model.UserAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.SuccessContinuation;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference mRef;
     private ChildEventListener mChildListener;
 
+    private StorageReference mStorageRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,22 +72,12 @@ public class MainActivity extends AppCompatActivity {
         mReadDataButton = (Button) findViewById(R.id.ButtonReadData);
 
         recyclerView= (RecyclerView)findViewById(R.id.recyclerView);
-
-
         //
         mDataBase = FirebaseDatabase.getInstance();
         //mRef here refer to main node(parent node// first node) when getRefernce() is used
         //mRef.getReference(path//name of child)
-        mRef = mDataBase.getReference("users");
+       // mRef = mDataBase.getReference("users");
 
-        //Firebase storage
-        FirebaseStorage firebaseStorage =FirebaseStorage.getInstance();
-
-        mDataList= new ArrayList<>();
-        //
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        userAdapter= new UserAdapter(this, mDataList);
-        recyclerView.setAdapter(userAdapter);
 
         mSubmitButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -90,69 +93,62 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mChildListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                User user = dataSnapshot.getValue(User.class);
-                user.setItemId(dataSnapshot.getKey());
-               mDataList.add(user);
-               userAdapter.notifyDataSetChanged();
+        //Firebase storage
 
-            }
+        FirebaseStorage firebaseStorage =FirebaseStorage.getInstance();
+        mStorageRef= firebaseStorage.getReference("docs/");
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                User user=dataSnapshot.getValue(User.class);
-                user.setItemId(dataSnapshot.getKey());
-                mDataList.remove(user);
-                userAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        mRef.addChildEventListener(mChildListener);
+        //mDataList= new ArrayList<>();
+        //
 
     }
 
     public void runCode() {
-        String name = mInputTextName.getText().toString();
-        String city = mInputTextCity.getText().toString();
-        String profession = mInputTextProfession.getText().toString();
-        int age = Integer.parseInt(mInputTextAge.getText().toString());
-        String key = mRef.push().getKey();
-        User user = new User(name, age,key,city,profession);
 
+        Bitmap bitmap=readImage();
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
 
-        mRef.child(key).setValue(user);
-        Toast.makeText(this, "data Inserted", Toast.LENGTH_LONG).show();
+            UploadTask uploadTask=mStorageRef.child("images/pic.jpg").putBytes(byteArrayOutputStream.toByteArray());
+            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    task.getException();
+                }
+            });
+        }catch (IOException e){
+            e.printStackTrace();
+        }
 
     }
 
     public void readData() {
     //read Data
-
     }
 
-    @Override
+    private Bitmap readImage()
+    {       InputStream inputStream= null;
+        try {
+             inputStream= getAssets().open("pic.jpg");
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) Drawable.createFromStream(inputStream, null);
+            return bitmapDrawable.getBitmap();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        if (inputStream != null){
+            try{inputStream.close();
+    }catch (IOException e){
+                e.printStackTrace();
+            }
+    }
+        return null;
+    }
+        @Override
     protected void onDestroy() {
         super.onDestroy();
         mRef.removeEventListener(mChildListener);
-        ;
+
     }
 }
 
